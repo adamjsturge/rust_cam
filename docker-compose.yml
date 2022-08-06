@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:13.1
+    restart: always
+    environment:
+      - POSTGRES_DB=${PG_DB_NAME}
+      - POSTGRES_USER=${PG_DB_USER}
+      - POSTGRES_PASSWORD=${PG_DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./local/docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./local/docker/postgres/data/:/var/lib/postgresql/data/
+  rust_cam:
+    build:
+      context: ./
+    restart: always
+    environment:
+      - POSTGRES_DB=${PG_DB_NAME}
+      - POSTGRES_USER=${PG_DB_USER}
+      - POSTGRES_PASSWORD=${PG_DB_PASSWORD}
+      - SECRET_KEY=${SECRET_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+    ports:
+      - "3000:3000"
+      - "21012:21012"
+
